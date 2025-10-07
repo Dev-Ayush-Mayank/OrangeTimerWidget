@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
-import { Upload, Download, Calendar, Clock, Palette, Timer, Globe, Layout } from "lucide-react"
+import { Upload, Calendar, Clock, Palette, Timer, Globe, Layout, Save } from "lucide-react"
 import type { TimerConfig } from "../lib/timer"
 import { themes } from "@/lib/themes"
 import { timezones } from "../lib/timezone"
@@ -565,6 +565,24 @@ export const SettingsPanel = ({ config, updateConfig }: SettingsPanelProps) => {
           <CardDescription>Customize timer appearance and labels</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+           {/* Timer size slider control */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="timerSize">Timer Size</Label>
+              <span className="text-sm text-muted-foreground">{Math.round(config.timerSize * 100)}%</span>
+            </div>
+            <input
+              id="timerSize"
+              type="range"
+              min="0.5"
+              max="2"
+              step="0.1"
+              value={config.timerSize}
+              onChange={(e) => updateConfig({ timerSize: Number(e.target.value) })}
+              className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+            />
+            <p className="text-xs text-muted-foreground">Adjust the size of the timer digits independently</p>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="timerStyle">Timer Style</Label>
             <Select value={config.timerStyle} onValueChange={(value: any) => updateConfig({ timerStyle: value })}>
@@ -968,7 +986,7 @@ export const SettingsPanel = ({ config, updateConfig }: SettingsPanelProps) => {
                   />
                 </div>
               </div>
-               <div className="space-y-2">
+               {/* <div className="space-y-2">
                 <Label htmlFor="buttonTextAnimation">Button Text Animation</Label>
                 <Select
                   value={config.buttonTextAnimation}
@@ -987,9 +1005,9 @@ export const SettingsPanel = ({ config, updateConfig }: SettingsPanelProps) => {
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">Animation effect for the button text</p>
-              </div>
+              </div> */}
 
-              {config.buttonTextAnimation !== "none" && (
+              {/* {config.buttonTextAnimation !== "none" && (
                 <div className="space-y-2">
                   <Label htmlFor="buttonTextAnimationDuration">Animation Repeat Interval (seconds)</Label>
                   <Input
@@ -1003,7 +1021,7 @@ export const SettingsPanel = ({ config, updateConfig }: SettingsPanelProps) => {
                   />
                   <p className="text-xs text-muted-foreground">How long to wait before repeating the animation</p>
                 </div>
-              )}
+              )} */}
             </>
           )}
         </CardContent>
@@ -1121,8 +1139,8 @@ export const SettingsPanel = ({ config, updateConfig }: SettingsPanelProps) => {
       </Card>
 
       <Button onClick={handleSaveConfig} className="w-full" size="lg">
-        <Download className="w-4 h-4 mr-2" />
-        Save Configuration
+        <Save className="w-4 h-4 mr-2" />
+        Save & Deploy
       </Button>
     </div>
   )

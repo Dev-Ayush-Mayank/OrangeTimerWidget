@@ -28,6 +28,7 @@ export const TimerWidgetBuilder = () => {
     timezone: "UTC",
     timerStyle: "rounded",
     digitAnimation: "none",
+    timerSize: 1,
     backgroundColor: "#f8fafc",
     backgroundImage: null,
     textFont: "font-sans",

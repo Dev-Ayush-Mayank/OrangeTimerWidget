@@ -19,6 +19,7 @@ export interface TimerConfig {
   timezone: string
   timerStyle: "circle" | "square" | "rounded" | "none"
   digitAnimation: "none" | "bounce" | "fade" | "flip" | "slide"
+  timerSize: number
   backgroundColor: string
   backgroundImage: string | null
   textFont: string

@@ -180,7 +180,7 @@ export function TimerPreview({ config }: TimerPreviewProps) {
       return (
         <div className="flex gap-4 items-center justify-center">
           <div className="flex flex-col items-center gap-2">
-            <div className="flex gap-1">
+            <div className="flex gap-1" style={{ transform: `scale(${config.timerSize})` }}>
               {String(currentNumber)
                 .split("")
                 .map((digit, i) => (
@@ -211,7 +211,7 @@ export function TimerPreview({ config }: TimerPreviewProps) {
     }
 
     return (
-      <div className="flex gap-4 items-center justify-center">
+      <div className="flex gap-4 items-center justify-center" style={{ transform: `scale(${config.timerSize})` }}>
         {[
           { value: timeLeft.days, label: config.labelDays, showLabel: config.showDaysLabel, showUnit: config.showDays },
           {
@@ -327,8 +327,8 @@ export function TimerPreview({ config }: TimerPreviewProps) {
             </div>
 
             {/* Center: Timer */}
-            <div className="flex-shrink-0">
-              <div className="flex gap-2 items-center">
+            <div className="flex-shrink-0 self-center">
+              <div className="flex gap-2 items-center" style={{ transform: `scale(${config.timerSize})` }}>
                 {config.timerType === "number-counter" ? (
                   <div className="flex gap-1">
                     {String(currentNumber)

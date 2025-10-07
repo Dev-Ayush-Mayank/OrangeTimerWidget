@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
+import { SpinnerCustom } from "@/components/Spinner";
 
 export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const [loading, setLoading] = useState(true);
@@ -25,7 +26,7 @@ export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     };
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <SpinnerCustom />;
 
   // If no session, redirect to home page
   if (!session) return <Navigate to="/" replace />;
