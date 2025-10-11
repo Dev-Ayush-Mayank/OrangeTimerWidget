@@ -19,6 +19,7 @@ export function TimerPreview({ config }: TimerPreviewProps) {
   const [prevTimeLeft, setPrevTimeLeft] = useState(timeLeft)
   const [currentNumber, setCurrentNumber] = useState(config.startNumber)
   const [isBannerClosed, setIsBannerClosed] = useState(false)
+  const [isTimerFinished, setIsTimerFinished] = useState(false)
 
   useEffect(() => {
     if (config.timerType === "countdown") {
@@ -35,11 +36,12 @@ export function TimerPreview({ config }: TimerPreviewProps) {
             minutes: Math.floor((difference / 1000 / 60) % 60),
             seconds: Math.floor((difference / 1000) % 60),
           }
-          setPrevTimeLeft(timeLeft)
           setTimeLeft(newTimeLeft)
+          setIsTimerFinished(false)
         } else {
-          setPrevTimeLeft(timeLeft)
           setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+          setIsTimerFinished(true)
+          handleTimerFinish()
         }
       }
 
@@ -47,9 +49,11 @@ export function TimerPreview({ config }: TimerPreviewProps) {
       const timer = setInterval(calculateTimeLeft, 1000)
       return () => clearInterval(timer)
     } else if (config.timerType === "visitor-countdown") {
-      const STORAGE_KEY = "timer_visitor_start_time"
+      const STORAGE_KEY = `timer_visitor_start_${config.visitorCountdownDuration}_${config.visitorCountdownUnit}`
 
       const calculateVisitorTimeLeft = () => {
+        if (typeof window === "undefined") return
+
         let startTime = localStorage.getItem(STORAGE_KEY)
 
         if (!startTime) {
@@ -57,7 +61,23 @@ export function TimerPreview({ config }: TimerPreviewProps) {
           localStorage.setItem(STORAGE_KEY, startTime)
         }
 
-        const endTime = Number(startTime) + config.visitorCountdownDuration * 60 * 60 * 1000
+        let durationInMs = 0
+        switch (config.visitorCountdownUnit) {
+          case "days":
+            durationInMs = config.visitorCountdownDuration * 24 * 60 * 60 * 1000
+            break
+          case "hours":
+            durationInMs = config.visitorCountdownDuration * 60 * 60 * 1000
+            break
+          case "minutes":
+            durationInMs = config.visitorCountdownDuration * 60 * 1000
+            break
+          case "seconds":
+            durationInMs = config.visitorCountdownDuration * 1000
+            break
+        }
+
+        const endTime = Number(startTime) + durationInMs
         const difference = endTime - Date.now()
 
         if (difference > 0) {
@@ -67,11 +87,12 @@ export function TimerPreview({ config }: TimerPreviewProps) {
             minutes: Math.floor((difference / 1000 / 60) % 60),
             seconds: Math.floor((difference / 1000) % 60),
           }
-          setPrevTimeLeft(timeLeft)
           setTimeLeft(newTimeLeft)
+          setIsTimerFinished(false)
         } else {
-          setPrevTimeLeft(timeLeft)
           setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+          setIsTimerFinished(true)
+          handleTimerFinish()
         }
       }
 
@@ -91,6 +112,9 @@ export function TimerPreview({ config }: TimerPreviewProps) {
 
         if (progress < 1) {
           requestAnimationFrame(updateCounter)
+        } else {
+          setIsTimerFinished(true)
+          handleTimerFinish()
         }
       }
 
@@ -100,11 +124,28 @@ export function TimerPreview({ config }: TimerPreviewProps) {
     config.targetDate,
     config.timerType,
     config.visitorCountdownDuration,
+    config.visitorCountdownUnit,
     config.startNumber,
     config.endNumber,
     config.counterDuration,
     config.timezone,
   ])
+
+  const handleTimerFinish = () => {
+
+    if (config.finishAction === "hide") {
+      console.log("[v0] Hiding timer")
+    } else if (config.finishAction === "message") {
+      console.log("[v0] Showing message:", config.finishMessage)
+    } else if (config.finishAction === "redirect" && config.finishRedirectUrl) {
+      console.log("[v0] Redirecting to:", config.finishRedirectUrl)
+      window.location.href = config.finishRedirectUrl
+    }
+  }
+
+  useEffect(() => {
+    setPrevTimeLeft(timeLeft)
+  }, [timeLeft])
 
   useEffect(() => {
     if (config.textFont) {
@@ -130,16 +171,6 @@ export function TimerPreview({ config }: TimerPreviewProps) {
     }
   }
 
-  const getTextAnimationClass = () => {
-    if (config.textAnimation === "none") return ""
-    return `animate-text-${config.textAnimation}`
-  }
-
-  const getButtonTextAnimationClass = () => {
-    if (config.buttonTextAnimation === "none") return ""
-    return `animate-text-${config.buttonTextAnimation}`
-  }
-
   const getAnimationClass = () => {
     switch (config.digitAnimation) {
       case "bounce":
@@ -151,6 +182,16 @@ export function TimerPreview({ config }: TimerPreviewProps) {
       default:
         return ""
     }
+  }
+
+  const getTextAnimationClass = () => {
+    if (config.textAnimation === "none") return ""
+    return `animate-text-${config.textAnimation}`
+  }
+
+  const getButtonTextAnimationClass = () => {
+    if (config.buttonTextAnimation === "none") return ""
+    return `animate-text-${config.buttonTextAnimation}`
   }
 
   const parseCustomCSS = (cssString: string): React.CSSProperties => {
@@ -210,29 +251,42 @@ export function TimerPreview({ config }: TimerPreviewProps) {
       )
     }
 
+    let visibleUnits = [
+      { value: timeLeft.days, label: config.labelDays, showLabel: config.showDaysLabel, showUnit: config.showDays },
+      { value: timeLeft.hours, label: config.labelHours, showLabel: config.showHoursLabel, showUnit: config.showHours },
+      {
+        value: timeLeft.minutes,
+        label: config.labelMinutes,
+        showLabel: config.showMinutesLabel,
+        showUnit: config.showMinutes,
+      },
+      {
+        value: timeLeft.seconds,
+        label: config.labelSeconds,
+        showLabel: config.showSecondsLabel,
+        showUnit: config.showSeconds,
+      },
+    ]
+
+    if (config.timerType === "visitor-countdown") {
+      switch (config.visitorCountdownUnit) {
+        case "seconds":
+          visibleUnits = visibleUnits.filter((_, index) => index === 3)
+          break
+        case "minutes":
+          visibleUnits = visibleUnits.filter((_, index) => index >= 2)
+          break
+        case "hours":
+          visibleUnits = visibleUnits.filter((_, index) => index >= 1)
+          break
+        case "days":
+          break
+      }
+    }
+
     return (
       <div className="flex gap-4 items-center justify-center" style={{ transform: `scale(${config.timerSize})` }}>
-        {[
-          { value: timeLeft.days, label: config.labelDays, showLabel: config.showDaysLabel, showUnit: config.showDays },
-          {
-            value: timeLeft.hours,
-            label: config.labelHours,
-            showLabel: config.showHoursLabel,
-            showUnit: config.showHours,
-          },
-          {
-            value: timeLeft.minutes,
-            label: config.labelMinutes,
-            showLabel: config.showMinutesLabel,
-            showUnit: config.showMinutes,
-          },
-          {
-            value: timeLeft.seconds,
-            label: config.labelSeconds,
-            showLabel: config.showSecondsLabel,
-            showUnit: config.showSeconds,
-          },
-        ]
+        {visibleUnits
           .filter((unit) => unit.showUnit)
           .map((unit, index) => (
             <div key={index} className="flex flex-col items-center gap-2">
@@ -281,11 +335,83 @@ export function TimerPreview({ config }: TimerPreviewProps) {
   }
 
   const renderBannerLayout = () => {
-    if (isBannerClosed) return null
+    if (isBannerClosed) {
+      return null
+    }
 
-  const baseHeight = 80 // Base height in pixels
-  const heightScale = config.bannerHeight / baseHeight
-  const combinedScale = config.bannerScale * heightScale
+    if (isTimerFinished && config.finishAction === "hide") {
+      return null
+    }
+
+    if (isTimerFinished && config.finishAction === "message") {
+      return (
+        <div
+         className={`fixed ${config.bannerPosition === "top" ? "top-0" : "bottom-0"} left-0 right-0 z-50 transition-all duration-300`}
+          style={{
+            backgroundColor: config.backgroundImage ? "transparent" : config.backgroundColor,
+            backgroundImage: config.backgroundImage ? `url(${config.backgroundImage})` : "none",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            height: `${config.bannerHeight}px`,
+          }}
+        >
+          <div className="container mx-auto px-6 h-full flex items-center justify-center">
+            <h2
+              style={{
+                color: config.textColor,
+                fontFamily: config.textFont,
+                ...parseCustomCSS(config.customTextCSS),
+              }}
+              className="text-xl font-bold"
+            >
+              {config.finishMessage}
+            </h2>
+            {config.showCloseButton && (
+              <button
+                onClick={() => setIsBannerClosed(true)}
+                className="absolute right-6 p-2 hover:bg-black/10 rounded-lg transition-colors"
+                aria-label="Close banner"
+              >
+                <X className="w-5 h-5" style={{ color: config.textColor }} />
+              </button>
+            )}
+          </div>
+        </div>
+      )
+    }
+
+    let visibleUnits = [
+      { value: timeLeft.days, label: config.labelDays, showLabel: config.showDaysLabel, showUnit: config.showDays },
+      { value: timeLeft.hours, label: config.labelHours, showLabel: config.showHoursLabel, showUnit: config.showHours },
+      {
+        value: timeLeft.minutes,
+        label: config.labelMinutes,
+        showLabel: config.showMinutesLabel,
+        showUnit: config.showMinutes,
+      },
+      {
+        value: timeLeft.seconds,
+        label: config.labelSeconds,
+        showLabel: config.showSecondsLabel,
+        showUnit: config.showSeconds,
+      },
+    ]
+
+    if (config.timerType === "visitor-countdown") {
+      switch (config.visitorCountdownUnit) {
+        case "seconds":
+          visibleUnits = visibleUnits.filter((_, index) => index === 3)
+          break
+        case "minutes":
+          visibleUnits = visibleUnits.filter((_, index) => index >= 2)
+          break
+        case "hours":
+          visibleUnits = visibleUnits.filter((_, index) => index >= 1)
+          break
+        case "days":
+          break
+      }
+    }
 
     return (
       <div
@@ -298,15 +424,14 @@ export function TimerPreview({ config }: TimerPreviewProps) {
           height: `${config.bannerHeight}px`,
         }}
       >
-         <div
+        <div
           className="container mx-auto px-6 h-full origin-center flex items-center"
           style={{
-           transform: `scale(${combinedScale})`,
+            transform: `scale(${config.bannerScale})`,
           }}
         >
           <div className="flex items-center justify-between gap-6 w-full">
-            {/* Left side: Text */}
-            <div className="flex-shrink-0" style={{ maxWidth: "360px" }}>
+            <div className="flex-shrink-0" style={{ maxWidth: "300px" }}>
               <h2
                 style={{
                   color: config.textColor,
@@ -326,7 +451,6 @@ export function TimerPreview({ config }: TimerPreviewProps) {
               </h2>
             </div>
 
-            {/* Center: Timer */}
             <div className="flex-shrink-0 self-center">
               <div className="flex gap-2 items-center" style={{ transform: `scale(${config.timerSize})` }}>
                 {config.timerType === "number-counter" ? (
@@ -356,32 +480,7 @@ export function TimerPreview({ config }: TimerPreviewProps) {
                       ))}
                   </div>
                 ) : (
-                  [
-                    {
-                      value: timeLeft.days,
-                      label: config.labelDays,
-                      showLabel: config.showDaysLabel,
-                      showUnit: config.showDays,
-                    },
-                    {
-                      value: timeLeft.hours,
-                      label: config.labelHours,
-                      showLabel: config.showHoursLabel,
-                      showUnit: config.showHours,
-                    },
-                    {
-                      value: timeLeft.minutes,
-                      label: config.labelMinutes,
-                      showLabel: config.showMinutesLabel,
-                      showUnit: config.showMinutes,
-                    },
-                    {
-                      value: timeLeft.seconds,
-                      label: config.labelSeconds,
-                      showLabel: config.showSecondsLabel,
-                      showUnit: config.showSeconds,
-                    },
-                  ]
+                  visibleUnits
                     .filter((unit) => unit.showUnit)
                     .map((unit, index) => (
                       <div key={index} className="flex flex-col items-center gap-1">
@@ -422,14 +521,13 @@ export function TimerPreview({ config }: TimerPreviewProps) {
               </div>
             </div>
 
-            {/* Right side: Button and Close */}
             <div className="flex items-center gap-4 flex-shrink-0">
               {config.showButton && (
                 <a
                   href={config.buttonUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                 className={`px-6 py-3 text-base font-semibold rounded-lg transition-all duration-300 ${
+                  className={`px-6 py-3 text-base font-semibold rounded-lg transition-all duration-300 ${
                     config.buttonFont
                   } ${config.showButtonShadow ? "shadow-lg" : ""}`}
                   style={{
@@ -445,7 +543,14 @@ export function TimerPreview({ config }: TimerPreviewProps) {
                     e.currentTarget.style.backgroundColor = config.buttonColor
                   }}
                 >
-                  {config.buttonText}
+                  <span
+                    className={getButtonTextAnimationClass()}
+                    style={{
+                      animationDuration: `${config.buttonTextAnimationDuration}s`,
+                    }}
+                  >
+                    {config.buttonText}
+                  </span>
                 </a>
               )}
 
@@ -466,6 +571,37 @@ export function TimerPreview({ config }: TimerPreviewProps) {
   }
 
   const renderCenteredLayout = () => {
+    if (isTimerFinished && config.finishAction === "hide") {
+      return null
+    }
+
+    if (isTimerFinished && config.finishAction === "message") {
+      return (
+        <div
+          className="min-h-screen flex items-center justify-center p-8 transition-all duration-300"
+          style={{
+            backgroundColor: config.backgroundImage ? "transparent" : config.backgroundColor,
+            backgroundImage: config.backgroundImage ? `url(${config.backgroundImage})` : "none",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          <div className="text-center max-w-2xl">
+            <h1
+              style={{
+                color: config.textColor,
+                fontFamily: config.textFont,
+                ...parseCustomCSS(config.customTextCSS),
+              }}
+              className="text-4xl font-bold"
+            >
+              {config.finishMessage}
+            </h1>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div
         className="min-h-screen flex items-center justify-center p-8 transition-all duration-300"
@@ -513,7 +649,14 @@ export function TimerPreview({ config }: TimerPreviewProps) {
                   e.currentTarget.style.backgroundColor = config.buttonColor
                 }}
               >
-                {config.buttonText}
+                <span
+                  className={getButtonTextAnimationClass()}
+                  style={{
+                    animationDuration: `${config.buttonTextAnimationDuration}s`,
+                  }}
+                >
+                  {config.buttonText}
+                </span>
               </a>
             )}
 
@@ -540,14 +683,20 @@ export function TimerPreview({ config }: TimerPreviewProps) {
                   e.currentTarget.style.backgroundColor = config.buttonColor
                 }}
               >
-                {config.buttonText}
+                <span
+                  className={getButtonTextAnimationClass()}
+                  style={{
+                    animationDuration: `${config.buttonTextAnimationDuration}s`,
+                  }}
+                >
+                  {config.buttonText}
+                </span>
               </a>
             )}
           </div>
 
           {config.textPosition === "bottom" && (
             <h1
-              
               style={{
                 color: config.textColor,
                 fontFamily: config.textFont,
@@ -587,7 +736,7 @@ export function TimerPreview({ config }: TimerPreviewProps) {
           0% { transform: translateY(-20px); opacity: 0; }
           100% { transform: translateY(0); opacity: 1; }
         }
-
+        
         /* Updated text animation keyframes to repeat after duration */
         @keyframes text-glitch {
           0%, 100% { transform: translate(0); }
@@ -639,8 +788,8 @@ export function TimerPreview({ config }: TimerPreviewProps) {
         .animate-slide-digit {
           animation: slide-digit 0.4s ease-out;
         }
-
-         /* Updated text animation classes to use infinite with custom duration */
+        
+        /* Updated text animation classes to use infinite with custom duration */
         .animate-text-glitch {
           animation: text-glitch infinite;
         }
@@ -662,9 +811,15 @@ export function TimerPreview({ config }: TimerPreviewProps) {
           white-space: nowrap;
           animation: text-typewriter infinite steps(40, end);
         }
+        .animate-text-glitch span,
+        .animate-text-fade span,
+        .animate-text-pulse span,
+        .animate-text-wave span,
+        .animate-text-typewriter span {
+          display: inline-block;
+        }
       `}</style>
-
-      {config.layout === "banner" ? renderBannerLayout() : renderCenteredLayout()}
+        {config.layout === "banner" ? renderBannerLayout() : renderCenteredLayout()}
     </>
   )
 }

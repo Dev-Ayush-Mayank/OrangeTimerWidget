@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
 import { Card } from "@/components/ui/card";
 import { Sidebar } from "@/components/SideBar";
 import { Button } from "@/components/ui/button";
@@ -26,7 +24,7 @@ export const Dashboard = () => {
       {/* Second grid - 80% width */}
       <div className="h-screen ml-[20%] w-[80%] overflow-y-auto bg-white">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
-          <Card className="h-full p-6 border-none rounded-none outline-none shadow-none">
+          <Card className="h-full p-2 border-none rounded-none outline-none shadow-none">
           <h2 className="text-lg font-semibold mb-4">Dashboard</h2>
           <p className="text-muted-foreground">This section takes 80% of the screen width.</p>
         </Card>

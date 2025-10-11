@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
-import { Upload, Calendar, Clock, Palette, Timer, Globe, Layout, Save } from "lucide-react"
+import { Upload, Download, Calendar, Clock, Palette, Timer, Globe, Layout, Flag, Save } from "lucide-react"
 import type { TimerConfig } from "../lib/timer"
 import { themes } from "@/lib/themes"
 import { timezones } from "../lib/timezone"
@@ -331,19 +331,42 @@ export const SettingsPanel = ({ config, updateConfig }: SettingsPanelProps) => {
           </div>
 
           {config.timerType === "visitor-countdown" && (
-            <div className="space-y-2">
-              <Label htmlFor="visitorCountdownDuration">Countdown Duration (hours)</Label>
-              <Input
-                id="visitorCountdownDuration"
-                type="number"
-                min="1"
-                value={config.visitorCountdownDuration}
-                onChange={(e) => updateConfig({ visitorCountdownDuration: Number(e.target.value) })}
-              />
+            <>
+           {/* ADDED: Unit selector and duration input */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="visitorCountdownDuration">Duration</Label>
+                  <Input
+                    id="visitorCountdownDuration"
+                    type="number"
+                    min="1"
+                    value={config.visitorCountdownDuration}
+                    onChange={(e) => updateConfig({ visitorCountdownDuration: Number(e.target.value) })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="visitorCountdownUnit">Unit</Label>
+                  <Select
+                    value={config.visitorCountdownUnit}
+                    onValueChange={(value: any) => updateConfig({ visitorCountdownUnit: value })}
+                  >
+                    <SelectTrigger id="visitorCountdownUnit">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="font-outfit">
+                      <SelectItem value="days">Days</SelectItem>
+                      <SelectItem value="hours">Hours</SelectItem>
+                      <SelectItem value="minutes">Minutes</SelectItem>
+                      <SelectItem value="seconds">Seconds</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
               <p className="text-xs text-muted-foreground">
-                How many hours each visitor will see counting down from their first visit
+                How long each visitor will see counting down from their first visit. Timer units will automatically
+                adjust based on the selected unit.
               </p>
-            </div>
+            </>
           )}
 
           {config.timerType === "number-counter" && (
@@ -1084,6 +1107,70 @@ export const SettingsPanel = ({ config, updateConfig }: SettingsPanelProps) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* CHANGE: Added Action After Timer Finishes card */}
+      <Card className="border-2 border-primary/20">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Flag className="w-5 h-5" />
+            Action After Timer Finishes
+          </CardTitle>
+          <CardDescription>Choose what happens when the countdown reaches zero</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="finishAction">Select Action</Label>
+            <Select value={config.finishAction} onValueChange={(value: any) => updateConfig({ finishAction: value })}>
+              <SelectTrigger id="finishAction">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="font-outfit">
+                <SelectItem value="hide">Hide Timer</SelectItem>
+                <SelectItem value="message">Show Message</SelectItem>
+                <SelectItem value="redirect">Redirect To URL</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              {config.finishAction === "hide" && "The timer widget will be hidden when countdown reaches zero"}
+              {config.finishAction === "message" && "Display a custom message when the timer finishes"}
+              {config.finishAction === "redirect" && "Automatically redirect users to a specified URL"}
+            </p>
+          </div>
+
+          {config.finishAction === "message" && (
+            <div className="space-y-2">
+              <Label htmlFor="finishMessage">Finish Message</Label>
+              <Textarea
+                id="finishMessage"
+                value={config.finishMessage}
+                onChange={(e) => updateConfig({ finishMessage: e.target.value })}
+                placeholder="Enter the message to display when timer finishes"
+                rows={3}
+              />
+              <p className="text-xs text-muted-foreground">
+                This message will replace the timer when the countdown reaches zero
+              </p>
+            </div>
+          )}
+
+          {config.finishAction === "redirect" && (
+            <div className="space-y-2">
+              <Label htmlFor="finishRedirectUrl">Redirect URL</Label>
+              <Input
+                id="finishRedirectUrl"
+                type="url"
+                value={config.finishRedirectUrl}
+                onChange={(e) => updateConfig({ finishRedirectUrl: e.target.value })}
+                placeholder="https://example.com/expired"
+              />
+              <p className="text-xs text-muted-foreground">
+                Users will be automatically redirected to this URL when the timer finishes
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
 
       <Card>
         <CardHeader>

@@ -7,6 +7,7 @@ import { ProtectedRoute } from "./lib/ProtectedRoute";
 import { Login } from "./pages/Login";
 import { Toaster } from "sonner";
 import { TimerWidgetBuilder } from "./pages/NewTimerWidget";
+import { Settings } from "./pages/Settings";
 
 
 export const App = () => {
@@ -29,6 +30,14 @@ export const App = () => {
           element={
             <ProtectedRoute>
               <TimerWidgetBuilder />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path='/settings'
+          element={
+            <ProtectedRoute>
+              <Settings />
             </ProtectedRoute>
           }
         />

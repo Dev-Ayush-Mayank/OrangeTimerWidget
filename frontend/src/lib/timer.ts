@@ -52,4 +52,8 @@ export interface TimerConfig {
   endNumber: number
   counterDuration: number
   visitorCountdownDuration: number
+  visitorCountdownUnit: "days" | "hours" | "minutes" | "seconds"
+  finishAction: "hide" | "message" | "redirect"
+  finishMessage: string
+  finishRedirectUrl: string
 }

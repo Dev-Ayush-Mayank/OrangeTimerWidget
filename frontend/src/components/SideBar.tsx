@@ -13,6 +13,7 @@ import { supabase } from "../lib/supabaseClient";
 import { Link, useNavigate, useLocation } from "react-router-dom"; // <-- Imported useLocation
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
+import { TiltCard } from "./TiltCard";
 
 interface SidebarProps {
   className?: string;
@@ -91,6 +92,8 @@ export const Sidebar = ({ className }: SidebarProps) => {
           );
         })}
       </nav>
+
+      <TiltCard />
 
       {/* Bottom Section */}
       <div className='border-t border-border p-4'>

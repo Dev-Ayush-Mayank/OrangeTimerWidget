@@ -63,6 +63,10 @@ export const TimerWidgetBuilder = () => {
     visitorCountdownDuration: 24,
     textAnimation: "none",
     textAnimationDuration: 2,
+    visitorCountdownUnit: "hours",
+    finishAction: "hide",
+    finishMessage: "The offer has ended!",
+    finishRedirectUrl: "https://example.com/expired",
   })
 
   const updateConfig = (updates: Partial<TimerConfig>) => {
