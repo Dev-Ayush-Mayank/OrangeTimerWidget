@@ -6,11 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
-import { Upload, Download, Calendar, Clock, Palette, Timer, Globe, Layout, Flag, Save } from "lucide-react"
+import { Upload, Calendar, Clock, Palette, Timer, Globe, Layout, Flag, Save } from "lucide-react"
 import type { TimerConfig } from "../lib/timer"
 import { themes } from "@/lib/themes"
 import { timezones } from "../lib/timezone"
 import { fontCategories, getFontsByCategory, loadGoogleFont } from "../lib/GoogleFonts"
+import { toast } from "sonner"
+import { supabase } from "@/lib/supabaseClient"
 
 interface SettingsPanelProps {
   config: TimerConfig
@@ -29,18 +31,56 @@ export const SettingsPanel = ({ config, updateConfig }: SettingsPanelProps) => {
     }
   }
 
-  const handleSaveConfig = () => {
-    const jsonData = JSON.stringify(config, null, 2)
-    const blob = new Blob([jsonData], { type: "application/json" })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = url
-    link.download = `timer-config-${new Date().toISOString().slice(0, 10)}.json`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+  // const handleSaveConfig = () => {
+  //   const jsonData = JSON.stringify(config, null, 2)
+  //   const blob = new Blob([jsonData], { type: "application/json" })
+  //   const url = URL.createObjectURL(blob)
+  //   const link = document.createElement("a")
+  //   link.href = url
+  //   link.download = `timer-config-${new Date().toISOString().slice(0, 10)}.json`
+  //   document.body.appendChild(link)
+  //   link.click()
+  //   document.body.removeChild(link)
+  //   URL.revokeObjectURL(url)
+  // }
+
+  const handleSaveConfig = async () => {
+  try {
+    // Ensure you have the logged-in user
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
+    if (userError || !user) {
+      toast.error("Please log in to save your widget.")
+      return
+    }
+
+    // Build widget object
+    const widgetData = {
+      user_id: user.id,
+      name: "My Timer Widget", // or take this from a text input
+      type: "timer",
+      config: config, // your full TimerConfig object
+    }
+
+    // Insert or update widget in Supabase
+    const { data, error } = await supabase
+      .from("widgets")
+      .insert([widgetData])
+      .select()
+
+    if (error) throw error
+
+    toast.success("Timer widget saved successfully!")
+
+    // Optional: Return the widget ID so you can generate embed code
+    console.log("Saved widget:", data[0])
+    return data[0]
+
+  } catch (err) {
+    console.error(err)
+    toast.error("Failed to save widget configuration.")
   }
+}
+
 
   const targetDateObj = new Date(config.targetDate)
   const dateValue = targetDateObj.toISOString().slice(0, 10)

@@ -8,6 +8,7 @@ import { Login } from "./pages/Login";
 import { Toaster } from "sonner";
 import { TimerWidgetBuilder } from "./pages/NewTimerWidget";
 import { Settings } from "./pages/Settings";
+import { ManageWidgets } from "./pages/ManageWidgets";
 
 
 export const App = () => {
@@ -38,6 +39,14 @@ export const App = () => {
           element={
             <ProtectedRoute>
               <Settings />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path='/manage-widgets'
+          element={
+            <ProtectedRoute>
+              <ManageWidgets />
             </ProtectedRoute>
           }
         />
