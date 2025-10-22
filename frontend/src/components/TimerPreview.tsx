@@ -654,15 +654,15 @@ export const TimerPreview = ({ config }: TimerPreviewProps) => {
         {/* This is for banner widget */}
          <div className="flex justify-center">
           <Link
-            to='https://orangetimer.com'
+            to='https://bannerflo.com'
             target='_blank'
             rel='noopener noreferrer'
             className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/10 hover:bg-black/20 transition-colors group"
             style={{ fontSize: "10px" }}
           >
-            <img src="../../src/assets/app-logo.png" className="h-4 w-4" alt="OrangeTimer Logo" />
+            <img src="../../src/assets/app-logo.png" className="h-4 w-4" alt="BannerFlo Logo" />
             <span className='text-white/70 group-hover:text-white/90 transition-colors whitespace-nowrap'>
-              Powered by OrangeTimer
+              Powered by BannerFlo
             </span>
           </Link>
           </div>
@@ -822,15 +822,15 @@ export const TimerPreview = ({ config }: TimerPreviewProps) => {
         </div>
         {/* This is for full page widget */}
         <Link
-          to='https://orangetimer.com'
+          to='https://bannerflo.com'
           target='_blank'
           rel='noopener noreferrer'
           className='absolute bottom-4 right-4 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/10 hover:bg-black/20 transition-colors group'
           style={{ fontSize: "12px" }}
         >
-          <img src="../../src/assets/app-logo.png" className="h-4 w-4" alt="OrangeTimer Logo" />
+          <img src="../../src/assets/app-logo.png" className="h-4 w-4" alt="BannerFlo Logo" />
           <span className='text-white/70 group-hover:text-white/90 transition-colors whitespace-nowrap'>
-            Powered by OrangeTimer
+            Powered by BannerFlo
           </span>
         </Link>
       </div>

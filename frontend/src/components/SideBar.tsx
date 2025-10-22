@@ -27,13 +27,13 @@ const menuItems = [
   },
   {
     icon: GalleryHorizontalEnd,
-    label: "Create New Timer",
-    to: "/new-widget",
+    label: "Create New Banner",
+    to: "/new-banner-widget",
   },
   {
     icon: SquareGantt,
-    label: "Manage Widgets",
-    to: "/manage-widgets",
+    label: "Manage Banners",
+    to: "/manage-banners",
   },
   {
     icon: Settings,
@@ -44,7 +44,7 @@ const menuItems = [
 
 export const Sidebar = ({ className }: SidebarProps) => {
   const navigate = useNavigate();
-  const location = useLocation(); // <-- Get current location
+  const location = useLocation();
   const [user, setUser] = useState<any>(null);
 
   const handleLogout = async () => {
@@ -129,7 +129,7 @@ export const Sidebar = ({ className }: SidebarProps) => {
           </div>
         </Button>
         <div className="mt-4 text-center text-xs text-muted-foreground mb-6">
-          &copy; {new Date().getFullYear()} OrangeTimer. All rights reserved.
+          &copy; {new Date().getFullYear()} BannerFlo. All rights reserved.
         </div>
       </div>
     </aside>

@@ -9,6 +9,7 @@ import { Toaster } from "sonner";
 import { TimerWidgetBuilder } from "./pages/NewTimerWidget";
 import { Settings } from "./pages/Settings";
 import { ManageWidgets } from "./pages/ManageWidgets";
+import { NewWidgetBuilder } from "./pages/NewWidgetBuilder";
 
 
 export const App = () => {
@@ -31,6 +32,14 @@ export const App = () => {
           element={
             <ProtectedRoute>
               <TimerWidgetBuilder />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/new-banner-widget'
+          element={
+            <ProtectedRoute>
+              <NewWidgetBuilder />
             </ProtectedRoute>
           }
         />

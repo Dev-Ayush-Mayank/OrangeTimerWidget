@@ -160,7 +160,7 @@ const handleEmailLogin = async (e: React.FormEvent) => {
               )}
             </Button>
             <p className="text-center text-sm text-gray-600 mt-4">
-              New to OrangeTimer?{" "}
+              New to BannerFlo?{" "}
               <button
                 type="button"
                 onClick={() => navigate("/register")}

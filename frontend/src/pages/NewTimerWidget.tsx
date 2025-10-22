@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { TimerPreview } from "../components/TimerPreview"
 import { SettingsPanel } from "../components/SettingsPanel"
@@ -7,8 +5,11 @@ import { EmbedCodeCard } from "../components/EmbedCodeCard"
 import type { TimerConfig } from "../lib/timer"
 import { Card } from "@/components/ui/card"
 import { Sidebar } from "@/components/SideBar"
+import { Monitor, Smartphone } from "lucide-react"
 
 export const TimerWidgetBuilder = () => {
+  const [isMobileView, setIsMobileView] = useState(false)
+  
   const [config, setConfig] = useState<TimerConfig>({
     timerType: "countdown",
     layout: "centered",
