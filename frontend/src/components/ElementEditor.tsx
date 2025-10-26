@@ -59,7 +59,7 @@ export function ElementEditor({ block, onUpdate, onSave, onCancel }: ElementEdit
   }
 
   return (
-    <div className="w-96 h-screen bg-sidebar border-r border-sidebar-border flex flex-col">
+    <div className="w-96 h-screen bg-sidebar border-r border-sidebar-border flex flex-col overflow-hidden">
       {/* Header */}
       <div className="px-4 py-3 border-b border-sidebar-border flex-shrink-0">
         <div className="flex items-center justify-between mb-3">
@@ -83,6 +83,7 @@ export function ElementEditor({ block, onUpdate, onSave, onCancel }: ElementEdit
       </div>
 
       {/* Editor Content */}
+      <ScrollArea className="flex-1 h-[calc(100vh-64px)]">
         <div className="p-4 space-y-4">
           {/* Content */}
           {block.type !== "spacing" && (
@@ -138,7 +139,7 @@ export function ElementEditor({ block, onUpdate, onSave, onCancel }: ElementEdit
                 </SelectTrigger>
                 <SelectContent>
                   {FONT_SIZES.map((size) => (
-                    <SelectItem key={size.value} value={size.value}>
+                    <SelectItem key={size.value} value={size.value} className="font-outfit">
                       {size.label}
                     </SelectItem>
                   ))}
@@ -158,7 +159,7 @@ export function ElementEditor({ block, onUpdate, onSave, onCancel }: ElementEdit
                 <SelectTrigger className="bg-sidebar text-sidebar-foreground">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="font-outfit">
                   <SelectItem value="300">Light (300)</SelectItem>
                   <SelectItem value="400">Regular (400)</SelectItem>
                   <SelectItem value="500">Medium (500)</SelectItem>
@@ -203,7 +204,7 @@ export function ElementEditor({ block, onUpdate, onSave, onCancel }: ElementEdit
                 <SelectTrigger className="bg-sidebar text-sidebar-foreground">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="font-outfit">
                   <SelectItem value="left">Left</SelectItem>
                   <SelectItem value="center">Center</SelectItem>
                   <SelectItem value="right">Right</SelectItem>
@@ -282,6 +283,7 @@ export function ElementEditor({ block, onUpdate, onSave, onCancel }: ElementEdit
             </div>
           )}
         </div>
+      </ScrollArea>
     </div>
   )
 }

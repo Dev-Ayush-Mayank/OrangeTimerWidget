@@ -68,9 +68,9 @@ export const BuilderSidebar = ({ widgetConfig, onConfigChange }: BuilderSidebarP
   }
 
   return (
-    <div className="w-96 bg-sidebar border-r border-sidebar-border flex flex-col">
-      <Tabs defaultValue="builder" className="flex-1 flex flex-col">
-        <div className="px-4 py-3 border-b border-sidebar-border">
+    <div className="w-96 bg-sidebar border-r border-sidebar-border flex flex-col h-full overflow-hidden">
+      <Tabs defaultValue="builder" className="flex-1 flex flex-col h-full">
+        <div className="px-4 py-3 border-b border-sidebar-border flex-shrink-0">
           <TabsList className="w-full bg-sidebar-accent">
             <TabsTrigger value="builder" className="flex-1">
               <Layout className="w-4 h-4 mr-2" />
@@ -83,7 +83,7 @@ export const BuilderSidebar = ({ widgetConfig, onConfigChange }: BuilderSidebarP
           </TabsList>
         </div>
 
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 h-[calc(100vh-64px)]">
           <TabsContent value="builder" className="p-4 space-y-4 mt-0">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -258,7 +258,7 @@ export const BuilderSidebar = ({ widgetConfig, onConfigChange }: BuilderSidebarP
                   <SelectTrigger className="bg-sidebar text-sidebar-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="font-outfit">
                     <SelectItem value="popup">Popup</SelectItem>
                     <SelectItem value="banner">Banner</SelectItem>
                   </SelectContent>
@@ -277,7 +277,7 @@ export const BuilderSidebar = ({ widgetConfig, onConfigChange }: BuilderSidebarP
                     <SelectTrigger className="bg-sidebar text-sidebar-foreground">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="font-outfit">
                       <SelectItem value="center">Center</SelectItem>
                       <SelectItem value="top">Top</SelectItem>
                       <SelectItem value="bottom">Bottom</SelectItem>
@@ -295,7 +295,7 @@ export const BuilderSidebar = ({ widgetConfig, onConfigChange }: BuilderSidebarP
                   <SelectTrigger className="bg-sidebar text-sidebar-foreground">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="font-outfit">
                     <SelectItem value="color">Solid Color</SelectItem>
                     <SelectItem value="gradient">Gradient</SelectItem>
                     <SelectItem value="image">Image</SelectItem>
@@ -344,7 +344,7 @@ export const BuilderSidebar = ({ widgetConfig, onConfigChange }: BuilderSidebarP
                       <SelectTrigger className="bg-sidebar text-sidebar-foreground">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="font-outfit">
                         <SelectItem value="to bottom">Top to Bottom</SelectItem>
                         <SelectItem value="to top">Bottom to Top</SelectItem>
                         <SelectItem value="to right">Left to Right</SelectItem>
